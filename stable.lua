@@ -1892,7 +1892,7 @@ client.set_event_callback( "setup_command", function( arg )
     moriade.anti_aim.pitch = "Off"
     moriade.anti_aim.yaw_value = 0
     moriade.anti_aim.yaw_jitter = "Center"
-    moriade.anti_aim.yaw_jitter_value = 180
+    moriade.anti_aim.yaw_jitter_value = 40
     moriade.anti_aim.body_yaw = "Jitter"
     moriade.anti_aim.yaw_base = "Local view"
     end
@@ -1915,7 +1915,6 @@ client.set_event_callback( "setup_command", function( arg )
         ui.set(moriade.reference.anti_aim.pitch[1], moriade.anti_aim.pitch);
         ui.set(moriade.reference.anti_aim.pitch[2], moriade.anti_aim.pitch_value);
         ui.set(moriade.reference.anti_aim.yaw_base, moriade.anti_aim.yaw_base);
-        ui.set(moriade.reference.anti_aim.yaw[1], moriade.anti_aim.yaw);
         ui.set(moriade.reference.anti_aim.yaw[2], moriade.anti_aim.yaw_value);
         ui.set(moriade.reference.anti_aim.yaw_jitter[1], moriade.anti_aim.yaw_jitter);
         ui.set(moriade.reference.anti_aim.yaw_jitter[2], moriade.anti_aim.yaw_jitter_value_real);
