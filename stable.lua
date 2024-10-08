@@ -529,7 +529,7 @@ moriade.menu.antiaim_safeknife_options = ui.new_multiselect("AA", "Anti-aimbot a
 moriade.menu.indicators = ui.new_checkbox("AA", "Anti-aimbot angles", "\aFFFFFFFFDefensive Indicator");
 moriade.menu.watermark = ui.new_combobox("AA", "Anti-aimbot angles", "\aFFFFFFFFWatermark", "Modern", "Side", "Bottom");
 moriade.menu.indicators5 = ui.new_combobox("AA", "Anti-aimbot angles", "\aFFFFFFFFIndicator", "-", "Modern", "v2");
-moriade.menu.animbreak = ui.new_multiselect("AA", "Anti-aimbot angles", "\aFFFFFFFFAnimations", "Pitch zero on land", "Static legs in air", "Earthquake", "Kangaroo");
+moriade.menu.animbreak = ui.new_multiselect("AA", "Anti-aimbot angles", "\aFFFFFFFFAnimations", "Pitch zero on land", "Static legs in air", "Leg breacker", "Earthquake", "Moonwalk in air", "Kangaroo");
 moriade.menu.indicator_main_color_label = ui.new_label("AA", "Anti-aimbot angles", "\aFFFFFFFFMain color");
 moriade.menu.indicator_main_color = ui.new_color_picker("AA", "Anti-aimbot angles", "Main Color\nClr", 0, 255, 255, 255);
 moriade.menu.indicator_main_os_color_label = ui.new_label("AA", "Anti-aimbot angles", "\aFFFFFFFFMain(OS) color");
@@ -1386,18 +1386,6 @@ setup_skeet_element("vis_elem", moriade.menu.antiaim_elements[1].enable, false, 
 
 --#region events
 
-local function is_vulnerable()
-    for _, v in ipairs(entity.get_players(true)) do
-        local flags = (entity.get_esp_data(v)).flags
-
-        if bit.band(flags, bit.lshift(1, 11)) ~= 0 then
-            return true
-        end
-    end
-
-    return false
-end
-
 -- custom anti_aims
 manipulation_break = function(a, b, time)
     return (time / 2 <= (globals.tickcount() % time)) and a or b --print
@@ -1689,7 +1677,7 @@ client.set_event_callback( "setup_command", function( arg )
     elseif ui.get(moriade.menu.antiaim_elements[moriade.anti_aim.state_id].antiaim_defensive_yaw_jitter_type) == "Delayed" then
         moriade.anti_aim.yaw_jitter_value = manipulation_break(ui.get(moriade.menu.antiaim_elements[moriade.anti_aim.state_id].antiaim_defensive_yaw_jitter_slider_l), ui.get(moriade.menu.antiaim_elements[moriade.anti_aim.state_id].antiaim_defensive_yaw_jitter_slider_r), ui.get(moriade.menu.antiaim_elements[moriade.anti_aim.state_id].antiaim_defensive_yaw_jitter_slider_speed))
     end
-    
+
     if ui.get(moriade.menu.antiaim_elements[moriade.anti_aim.state_id].antiaim_defensive_body_yaw_type) == "L&R" then
         moriade.anti_aim.body_yaw_value = moriade.anti_aim.aa_side ~= 1 and ui.get(moriade.menu.antiaim_elements[moriade.anti_aim.state_id].antiaim_defensive_body_yaw_slider_l) or ui.get(moriade.menu.antiaim_elements[moriade.anti_aim.state_id].antiaim_defensive_body_yaw_slider_r)
     elseif ui.get(moriade.menu.antiaim_elements[moriade.anti_aim.state_id].antiaim_defensive_body_yaw_type) == "Jitter" then
@@ -2496,11 +2484,43 @@ end)
 --#regionend
 
 --PIZDEC
+local delay_duration = 0.1 -- Задержка в 0.1 секунды
+local action_ready = false -- Флаг для отслеживания готовности к отключению
+local delay_start = 0 -- Время начала задержки
+
+-- Функция для проверки уязвимости
+local function is_vulnerable()
+    for _, v in ipairs(entity.get_players(true)) do
+        local flags = (entity.get_esp_data(v)).flags
+        if bit.band(flags, bit.lshift(1, 11)) ~= 0 then
+            return true
+        end
+    end
+    return false
+end
+
 client.set_event_callback("setup_command", function(cmd)
+    -- Проверяем состояние флажков
     if ui.get(moriade.menu.breaklc) and ui.get(moriade.menu.breaklckey) then
         if is_vulnerable() then
-            cmd.force_defensive = true
-            cmd.discharge_pending = true
+            -- Запускаем задержку
+            action_ready = true
+            delay_start = globals.realtime() -- Запоминаем текущее время
+            cmd.force_defensive = true  -- Убедитесь, что команда выставлена
+            cmd.discharge_pending = true  -- Также выставьте этот флаг, если нужно
+        end
+    end
+end)
+
+client.set_event_callback("tick", function()
+    if action_ready then
+        -- Проверяем, истекла ли задержка
+        if globals.realtime() - delay_start >= delay_duration then
+            action_ready = false -- Сбрасываем флаг задержки
+
+            -- Здесь отключаем Double Tap
+            ui.set(moriade.menu.breaklc, false) -- Отключаем дублирование
+            print("Double Tap disabled after delay.") -- Для отладки
         end
     end
 end)
@@ -2565,6 +2585,8 @@ client.set_event_callback('net_update_end', function()
     end
 end)
 ui.set_callback(moriade.menu.clantag, function() client.set_clan_tag('\0') end)
+
+--flickfs
 
 --resolver
 
@@ -2843,45 +2865,6 @@ end)
 client.register_esp_flag("RESOLVED", 200, 200, 200, function(e) return (entity.is_enemy(e) and ui.get(moriade.menu.EnableResolver) and Resolver.Main.Mode == 1) and true or false end)
 
 --#hueta
-clamper = function(yyyy)
-    if yyyy > 180 then
-        return -180 + yyyy - 180
-    elseif yyyy < -180 then
-        return 180 - (-180 - yyyy)
-    end
-end;
---re
-if ui.get(moriade.menu.antiaim_freestanding) then
-    if ui.get(moriade.menu.antiaim_flickfs) then
-        cmd.force_defensive = 1
-    end;
-    if ui.get(moriade.menu.antiaim_flickfs) then
-        moriade.reference.anti_aim.yaw = abstoflick + 180 + math.random(-10, 10)
-        cmd.pitch = 1080 + math.random(-25, 10)
-        cmd.force_defensive = 1;
-        ui.set(moriade.reference.anti_aim.pitch[1], "Custom")
-        ui.set(moriade.reference.anti_aim.pitch[2], 0)
-        ui.set(moriade.reference.anti_aim.yaw_base, "Local view")
-        ui.set(moriade.reference.anti_aim.yaw[1], "180")
-        ui.set(moriade.reference.anti_aim.yaw[2], clamper(abstoflick))
-        ui.set(moriade.reference.anti_aim.jitter[1], "Offset")
-        ui.set(moriade.reference.anti_aim.jitter[2], 0)
-        ui.set(moriade.reference.anti_aim.body_yaw[1], "Static")
-        ui.set(moriade.reference.anti_aim.body_yaw[2], 0)
-        ui.set(moriade.reference.anti_aim.fs_body_yaw, false)
-    else
-        abstoflick = antiaim_funcs.get_abs_yaw()
-        ui.set(moriade.reference.anti_aim.antiaim.pitch[1], "Minimal")
-        ui.set(moriade.reference.anti_aim.antiaim.yaw_base, "At targets")
-        ui.set(moriade.reference.anti_aim.antiaim.yaw[1], "180")
-        ui.set(moriade.reference.anti_aim.antiaim.yaw[2], 0)
-        ui.set(moriade.reference.anti_aim.antiaim.jitter[1], "Offset")
-        ui.set(moriade.reference.anti_aim.antiaim.jitter[2], 0)
-        ui.set(moriade.reference.anti_aim.antiaim.body_yaw[1], "Static")
-        ui.set(moriade.reference.anti_aim.antiaim.body_yaw[2], 0)
-        ui.set(moriade.reference.anti_aim.antiaim.fs_body_yaw, true)
-    end
-end;
 
 --- #region: prepare helpers
 local function table_contains(source, target)
@@ -2919,8 +2902,6 @@ local E_POSE_PARAMETERS = {
 --- #endregion
 
 --- #region: prepare menu elements
-
---- #endregion
 
 --- #region: process main work
 local function jitter_value()
@@ -2969,5 +2950,16 @@ client.set_event_callback("pre_render", function()
         if globals.tickcount() % 10 > 4 then
             self_anim_overlay.weight = jitter_value() / 30
         end
+    end
+
+    if contains(ui.get(moriade.menu.animbreak), "Leg breacker") then
+        entity.set_prop(entity.get_local_player(), "m_flPoseParameter", client.random_float(0.1, 2), 0)
+        ui.set(ui.reference('AA', 'Other', 'Leg movement'), client.random_int(1, 6) == 1 and "Off" or "Always slide")
+    end
+
+    if contains(ui.get(moriade.menu.animbreak), "Moonwalk in air") then
+        local anim = self_index:get_anim_overlay(6)
+        if not anim then return end
+        anim.weight = 1
     end
 end)
