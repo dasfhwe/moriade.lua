@@ -6,14 +6,12 @@ local clipboard = require('gamesense/clipboard')
 local vector = require 'vector'
 local images = require("gamesense/images")
 
+local steamname = panorama.open("CSGOHud").MyPersonaAPI.GetName()
+
 local script_info = {
     build = "Stable",
-    ver = "1.6",
-    ds = "cvar1337",
+    ver = "1.9.3",
 }
-
-local steamname = panorama.open("CSGOHud").MyPersonaAPI.GetName()
-local obex_data = obex_fetch and obex_fetch() or {username = 'dasfhwe', build = 'stable [beta] [v2.0]'}
 
 --MADE BY DASFHWE
 ffi.cdef [[
@@ -498,7 +496,6 @@ moriade.menu.keytable = ui.new_label("AA", "Fake lag", "\aAFAFC3FF•-----------
 moriade.menu.tab2_label7 = ui.new_label("AA", "Anti-aimbot angles", "\aAFAFC3FF• User:  " .. steamname);
 moriade.menu.tab2_label2 = ui.new_label("AA", "Anti-aimbot angles", "\aAFAFC3FF• Version:  " .. script_info.ver);
 moriade.menu.tab2_label3 = ui.new_label("AA", "Anti-aimbot angles", "\aAFAFC3FF• Build:  " .. script_info.build);
-moriade.menu.tab2_label4 = ui.new_label("AA", "Anti-aimbot angles", "\aAFAFC3FF• Author Discord:  " .. script_info.ds);
 moriade.menu.discord = ui.new_button("AA", "Anti-aimbot angles", "Discord" , function()
     panorama.loadstring("SteamOverlayAPI.OpenExternalBrowserURL('https://discord.gg/zPzDtxgDFX');")()
 end);
@@ -1334,7 +1331,6 @@ client.set_event_callback( "paint_ui", function(  )
     ui.set_visible(moriade.menu.tab2_label7, info_tab)
     ui.set_visible(moriade.menu.tab2_label2, info_tab)
     ui.set_visible(moriade.menu.tab2_label3, info_tab)
-    ui.set_visible(moriade.menu.tab2_label4, info_tab)
     ui.set_visible(moriade.menu.keytable, rage_tab)
     ui.set_visible(moriade.menu.pizdecrotebal, rage_tab)
     ui.set_visible(moriade.menu.discord, info_tab)
