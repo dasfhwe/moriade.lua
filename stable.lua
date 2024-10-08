@@ -508,7 +508,6 @@ moriade.menu.fpsboost = ui.new_checkbox("AA", "Anti-aimbot angles", "\aFFFFFFFFF
 moriade.menu.misclabel = ui.new_label("AA", "Anti-aimbot angles", "\aAFAFC3FF•------------------------------------------------•");
 moriade.menu.antiaim_anti_knife = ui.new_checkbox("AA", "Anti-aimbot angles", "\aFFFFFFFFAnti Backstab");
 moriade.menu.antiaim_legit_aa = ui.new_checkbox("AA", "Anti-aimbot angles", "\aFFFFFFFFLegit AA");
-moriade.menu.legitaaonkey = ui.new_hotkey("AA", "Anti-aimbot angles", "Legitaa");
 moriade.menu.ragelabel = ui.new_label("AA", "Anti-aimbot angles", "\aAFAFC3FF•------------------------------------------------•");
 moriade.menu.pizdecrotebal = ui.new_label("AA", "Fake lag", "\aAFAFC3FFOther keybinds");
 moriade.menu.EnableResolver = ui.new_checkbox("AA", "Anti-aimbot angles", "• \aFFFFFFFFCustom resolver")
@@ -1319,7 +1318,6 @@ client.set_event_callback( "paint_ui", function(  )
     ui.set_visible(moriade.menu.antiaim_anti_knife, misc_tab)
     ui.set_visible(moriade.menu.fpsboost, visuals_tab)
     ui.set_visible(moriade.menu.antiaim_legit_aa, misc_tab)
-    ui.set_visible(moriade.menu.legitaaonkey, misc_tab)
     ui.set_visible(moriade.menu.killsay, rage_tab)
     ui.set_visible(moriade.menu.consolefilter, misc_tab)
     ui.set_visible(moriade.menu.log_render, rage_tab)
